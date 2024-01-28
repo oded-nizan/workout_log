@@ -49,6 +49,21 @@ def login():
         return False
 
 
+def varify_user(username):
+    # open the file and load into a dictionary
+    with open("users.json", "r") as f:
+        users_data = json.load(f)
+    password = input("Enter password: ")
+    # compare to real password
+    real_password = users_data.setdefault(username)
+    if password != real_password:
+        print("Incorrect password")
+        return False
+    else:
+        print("Successfully logged in")
+        return True
+
+
 def create_user():
     # load data from json file
     with open("users.json", "r") as f:
@@ -83,6 +98,19 @@ def edit_program(username):
         if file_exists:
             break
         print("Program doesn't exists")
+
+    # check if program is owed by user
+    with open(program_name, "r") as f:
+        program_data = json.load(f)
+    if username == program_data["user"]:
+        varify = varify_user(username)
+        if varify:
+            pass
+        else:
+            print("You do not have permission, you will be restricted")
+            return
+    else:
+        return
 
     # edit program
     while True:
@@ -182,10 +210,41 @@ def create_program(username):
         json.dump(program_data, f)
 
 
+def print_program(username):
+    # if file exists print program
+    while True:
+        program_name = input("Enter program name: ")
+        program_name = username + '_' + program_name + '.json'
+        file_exists = os.path.exists(program_name)
+        if file_exists:
+            break
+        print("Program doesn't exists")
+
+    # check if program is owed by user
+    with open(program_name, "r") as f:
+        program_data = json.load(f)
+    if username == program_data["user"]:
+        varify = varify_user(username)
+        if varify:
+            pass
+        else:
+            print("You do not have permission, you will be restricted")
+            return
+    else:
+        return
+
+    # print program
+    print("The program " + program_name + "'s details will be printed: ")
+    exercises = program_data["exercises"]
+    for i in range(len(exercises)):
+        exercise = exercises[i]
+        print("Exercise number ", i, "name: " + exercise["name"] + "sets: ", exercise["sets"])
+
+
 def user_options(username):
     print(
         "If you wish to make changes to a current program enter 0, if you wish to create a new program enter 1, "
-        "if you wish to enter data to a program enter 2: ")
+        "if you wish to enter data to a program enter 2, if you wish to print a program enter 3: ")
     while True:
         choice = input("Enter your choice: ")
         if choice == 1 or choice == 0:
@@ -195,9 +254,12 @@ def user_options(username):
         edit_program(username)
     elif choice == 1:
         create_program(username)
-    else:
+    elif choice == 2:
         print("You choose to enter data to a program: ")
         # TODO: enter_data(username)
+    else:
+        print("You choose to print a program")
+        # TODO: print_program(username)
 
 
 def main():
