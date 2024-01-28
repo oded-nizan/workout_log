@@ -313,8 +313,7 @@ def user_options(username):
         print("You choose to enter data to a program: ")
         # TODO: enter_data(username)
     else:
-        print("You choose to print a program")
-        # TODO: print_program(username)
+        print_program(username)
 
 
 def main():
@@ -335,8 +334,6 @@ def main():
             print("Incorrect username")
     user_options(username)
 
-
-# TODO: adapt form exercise list method to days per week with lists per day
 
 if __name__ == '__main__':
     main()
