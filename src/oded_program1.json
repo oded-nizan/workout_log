@@ -1,0 +1,17 @@
+{
+  "user": "oded",
+  "exercises": [
+    {
+      "name": "flat barbell bench press",
+      "sets": 4
+    },
+    {
+      "name": "incline dumbbell bench press",
+      "sets": 4
+    },
+    {
+      "name": "barbell bicep curl",
+      "sets": 3
+    }
+  ]
+}
