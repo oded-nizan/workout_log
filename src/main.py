@@ -288,7 +288,7 @@ def main():
         else:
             print("Incorrect username")
     user_options(username)
-
+# TODO: adapt form exercise list method to days per week with lists per day
 
 if __name__ == '__main__':
     main()
