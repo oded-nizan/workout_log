@@ -199,6 +199,10 @@ def delete_exercise(program_name):
 
 
 def create_program(username):
+    if not varify_user(username):
+        print("You do not have permission to create a program for this username")
+        return
+
     program_name = input("Enter program name: ")
     program_name = username + '_' + program_name + '.json'
     exercises = []
@@ -213,6 +217,7 @@ def create_program(username):
         }
         exercises.append(exercise)
     program_data = {
+        "user": username,
         "exercises": exercises
     }
     with open(program_name, "w") as f:
@@ -288,6 +293,8 @@ def main():
         else:
             print("Incorrect username")
     user_options(username)
+
+
 # TODO: adapt form exercise list method to days per week with lists per day
 
 if __name__ == '__main__':
