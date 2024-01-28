@@ -145,23 +145,42 @@ def edit_program(username):
 def add_exercise(program_name):
     with open(program_name, "r") as f:
         program_data = json.load(f)
-    exercises = program_data["exercises"]
+    for day in program_data["days"]:
+        print(day["day_name"])
+        choice = input("Is this the day on which you wish to add an exercise? (y/n): ")
+        if choice == "y":
+            day["exercises"] = add_exercise_today(day["exercises"])
+            break
+    with open(program_name, "w") as f:
+        json.dump(program_data, f)
+
+
+def add_exercise_today(exercises):
     name = input("Enter the name of the exercise: ")
     sets = int(input("Enter the number of sets: "))
     exercise = {
         "name": name,
         "sets": sets
     }
-    exercises.appand(exercise)
-    program_data["exercises"] = exercises
-    with open(program_name, "w") as f:
-        json.dump(program_data, f)
+    exercises.append(exercise)
+    return exercises
 
 
 def change_exercise(program_name):
     with open(program_name, "r") as f:
         program_data = json.load(f)
-    exercises = program_data["exercises"]
+        print("You'll have to choose the day of the exercise you wish to change.")
+        for day in program_data["days"]:
+            print(day["day_name"])
+            choice = input("Is this the day on which you wish to change an exercise? (y/n): ")
+            if choice == "y":
+                day["exercises"] = change_exercise_today(day["exercises"])
+                break
+    with open(program_name, "w") as f:
+        json.dump(program_data, f)
+
+
+def change_exercise_today(exercises):
     new_exercise = {}
     for exercise in exercises:
         print(exercise["name"])
@@ -178,24 +197,29 @@ def change_exercise(program_name):
         print("You didn't select any exercise, abort.")
     else:
         exercises.appand(new_exercise)
-        program_data["exercises"] = exercises
-        with open(program_name, "w") as f:
-            json.dump(program_data, f)
+    return exercises
 
 
 def delete_exercise(program_name):
     with open(program_name, "r") as f:
         program_data = json.load(f)
-    exercises = program_data["exercises"]
-    for exercise in exercises:
-        print(exercise["name"])
-        delete = input("Is this the exercise you wish to edit? (y/n): ")
-        if delete == "y":
-            exercises.remove(exercise)
+    print("You'll have to choose the day of the exercise you wish to delete.")
+    for day in program_data["days"]:
+        print(day["day_name"])
+        choice = input("Is this the day on which you wish to delete an exercise? (y/n): ")
+        if choice == "y":
+            day["exercises"] = delete_exercise_today(day["exercises"])
             break
-    program_data["exercises"] = exercises
     with open(program_name, "w") as f:
         json.dump(program_data, f)
+
+
+def delete_exercise_today(exercises):
+    for exercise in exercises:
+        delete = input("Is this the exercise you wish to delete? (y/n): ")
+        if delete == "y":
+            exercises.remove(exercise)
+    return exercises
 
 
 def create_program(username):
@@ -205,6 +229,30 @@ def create_program(username):
 
     program_name = input("Enter program name: ")
     program_name = username + '_' + program_name + '.json'
+
+    program_data = {
+        "user": username,
+        "program_structure": []
+    }
+    structure = program_data["program_structure"]
+    while True:
+        day = input("Enter the name of the workout day you wish to create: (n to stop creating) ")
+        if day == "n":
+            break
+        else:
+            workout_day = create_day(day)
+            structure.append(workout_day)
+    program_data["program_structure"] = structure
+
+    with open(program_name, "w") as f:
+        json.dump(program_data, f)
+
+
+def create_day(name):
+    workout_day = {
+        "name": name,
+        "exercises": []
+    }
     exercises = []
     while True:
         name = input("Enter exercise name: (n if you wish to stop entering): ")
@@ -216,12 +264,8 @@ def create_program(username):
             "sets": sets
         }
         exercises.append(exercise)
-    program_data = {
-        "user": username,
-        "exercises": exercises
-    }
-    with open(program_name, "w") as f:
-        json.dump(program_data, f)
+    workout_day["exercises"] = exercises
+    return workout_day
 
 
 def print_program(username):
@@ -249,10 +293,7 @@ def print_program(username):
 
     # print program
     print("The program " + program_name + "'s details will be printed: ")
-    exercises = program_data["exercises"]
-    for i in range(len(exercises)):
-        exercise = exercises[i]
-        print("Exercise number ", i, "name: " + exercise["name"] + "sets: ", exercise["sets"])
+    print(program_data)  # hopes this work I'm not sure about printing a dictionary I don't normally work with python
 
 
 def user_options(username):
