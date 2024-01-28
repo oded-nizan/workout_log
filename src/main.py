@@ -20,9 +20,10 @@ def user_exists(username):
     # open the file and load into a dictionary
     with open("users.json", "r") as f:
         users_data = json.load(f)
-    username_list = users_data.keys()
-    if username in username_list:
-        return True
+    username_list = users_data["users"]
+    for user_name in username_list:
+        if user_name["username"] == username:
+            return True
     return False
 
 
@@ -36,7 +37,11 @@ def login():
         # if username exists, check password
         password = input("Enter password: ")
         # compare to real password
-        real_password = users_data.setdefault(username)
+        users_list = users_data["users"]
+        real_password = ""
+        for user_name in users_list:
+            if user_name["username"] == username:
+                real_password = user_name["password"]
         if password != real_password:
             print("Incorrect password")
             return False
@@ -55,7 +60,11 @@ def varify_user(username):
         users_data = json.load(f)
     password = input("Enter password: ")
     # compare to real password
-    real_password = users_data.setdefault(username)
+    users_list = users_data["users"]
+    real_password = ""
+    for user_name in users_list:
+        if user_name["username"] == username:
+            real_password = user_name["password"]
     if password != real_password:
         print("Incorrect password")
         return False
