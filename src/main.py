@@ -95,11 +95,9 @@ def edit_program(username):
             case "add":
                 add_exercise(program_name)
             case "change":
-                print("You choose to change an exercise in your program.")
-                # TODO: change_exercise(program_name)
+                change_exercise(program_name)
             case "delete":
-                print("You choose to delete an exercise.")
-                # TODO: delete_exercise(program_name)
+                delete_exercise(program_name)
             case _:
                 print("Something went wrong ;(")
         continue_actions = input("If you wish to continue to edit this program enter True: ")
@@ -123,6 +121,67 @@ def add_exercise(program_name):
         json.dump(program_data, f)
 
 
+def change_exercise(program_name):
+    with open(program_name, "r") as f:
+        program_data = json.load(f)
+    exercises = program_data["exercises"]
+    new_exercise = {}
+    for exercise in exercises:
+        print(exercise["name"])
+        edit = input("Is this the exercise you wish to edit? (y/n): ")
+        if edit == "y":
+            name = input("Enter the name of the exercise: ")
+            sets = int(input("Enter the number of sets: "))
+            new_exercise = {
+                "name": name,
+                "sets": sets
+            }
+            break
+    if new_exercise == {}:
+        print("You didn't select any exercise, abort.")
+    else:
+        exercises.appand(new_exercise)
+        program_data["exercises"] = exercises
+        with open(program_name, "w") as f:
+            json.dump(program_data, f)
+
+
+def delete_exercise(program_name):
+    with open(program_name, "r") as f:
+        program_data = json.load(f)
+    exercises = program_data["exercises"]
+    for exercise in exercises:
+        print(exercise["name"])
+        delete = input("Is this the exercise you wish to edit? (y/n): ")
+        if delete == "y":
+            exercises.remove(exercise)
+            break
+    program_data["exercises"] = exercises
+    with open(program_name, "w") as f:
+        json.dump(program_data, f)
+
+
+def create_program(username):
+    program_name = input("Enter program name: ")
+    program_name = username + '_' + program_name + '.json'
+    exercises = []
+    while True:
+        name = input("Enter exercise name: (n if you wish to stop entering): ")
+        if name == "n":
+            break
+        sets = int(input("Enter number of sets: "))
+        exercise = {
+            "name": name,
+            "sets": sets
+        }
+        exercises.append(exercise)
+    program_data = {
+        "exercises": exercises
+    }
+    with open(program_name, "w") as f:
+        json.dump(program_data, f)
+
+
 def user_options(username):
     print(
         "If you wish to make changes to a current program enter 0, if you wish to create a new program enter 1, "
@@ -135,8 +194,7 @@ def user_options(username):
     if choice == 0:
         edit_program(username)
     elif choice == 1:
-        print("You choose to create a new program: ")
-        # TODO: create_program(username)
+        create_program(username)
     else:
         print("You choose to enter data to a program: ")
         # TODO: enter_data(username)
