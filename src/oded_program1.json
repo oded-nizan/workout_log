@@ -1,6 +1,26 @@
 {
   "user": "oded",
-  "exercises": [
+  "program_structure": [
+    {
+      "day_name": "Pull Day",
+      "exercises": [
+    {
+      "name": "chest-supported dumbbell rows",
+      "sets": 4
+    },
+    {
+      "name": "seated wide-bar machine pull-downs",
+      "sets": 4
+    },
+    {
+      "name": "barbell bicep curl",
+      "sets": 3
+    }
+  ]
+    },
+    {
+      "day_name": "Push Day",
+      "exercises": [
     {
       "name": "flat barbell bench press",
       "sets": 4
@@ -10,8 +30,28 @@
       "sets": 4
     },
     {
-      "name": "barbell bicep curl",
+      "name": "barbell tricep skull crushers",
       "sets": 3
     }
   ]
+    },
+    {
+      "day_name": "Leg Day",
+      "exercises": [
+    {
+      "name": "flat barbell back squat",
+      "sets": 4
+    },
+    {
+      "name": "machine leg press",
+      "sets": 4
+    },
+    {
+      "name": "seated machine calf raises",
+      "sets": 3
+    }
+  ]
+    }
+  ]
+
 }
