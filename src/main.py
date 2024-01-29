@@ -3,6 +3,7 @@ import json
 import os
 
 
+
 def welcome():
     # ask if user is new
     while True:
