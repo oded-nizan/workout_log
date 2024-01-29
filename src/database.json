@@ -1,0 +1,360 @@
+{
+  "users": [
+    {
+      "username": "ella",
+      "id": 100000000,
+      "password": "321ella123",
+      "admin": false,
+      "programs": [
+        {
+          "program_name": "generic sbd",
+          "program_split": [
+            {
+              "workout_name": "bench day",
+              "exercises": [
+                {
+                  "exercise_name": "flat barbell bench press",
+                  "sets": 4,
+                  "exercise_log": [
+                    {
+                      "log_number": 1,
+                      "log_sets": [
+                        {
+                          "set_number": 1,
+                          "reps": 6,
+                          "weight": 62,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 2,
+                          "reps": 5,
+                          "weight": 65,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 3,
+                          "reps": 3,
+                          "weight": 70,
+                          "failure": true
+                        },
+                        {
+                          "set_number": 4,
+                          "reps": 2,
+                          "weight": 72,
+                          "failure": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "exercise_name": "incline dumbbell bench press",
+                  "sets": 2,
+                  "exercise_log": [
+                    {
+                      "log_number": 1,
+                      "log_sets": [
+                        {
+                          "set_number": 1,
+                          "reps": 12,
+                          "weight": 20,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 2,
+                          "reps": 8,
+                          "weight": 25,
+                          "failure": true
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "workout_name": "dead lift day",
+              "exercises": [
+                {
+                  "exercise_name": "conventional barbell dead lift",
+                  "sets": 2,
+                  "exercise_log": [
+                    {
+                      "log_number": 1,
+                      "log_sets": [
+                        {
+                          "set_number": 1,
+                          "reps": 2,
+                          "weight": 120,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 2,
+                          "reps": 2,
+                          "weight": 130,
+                          "failure": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "exercise_name": "sumo barbell dead lift",
+                  "sets": 2,
+                  "exercise_log": [
+                    {
+                      "log_number": 1,
+                      "log_sets": [
+                        {
+                          "set_number": 1,
+                          "reps": 3,
+                          "weight": 125,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 2,
+                          "reps": 1,
+                          "weight": 142,
+                          "failure": true
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "workout_name": "squat day",
+              "exercises": [
+                {
+                  "exercise_name": "high back barbell squats",
+                  "sets": 2,
+                  "exercise_log": [
+                    {
+                      "log_number": 1,
+                      "log_sets": [
+                        {
+                          "set_number": 1,
+                          "reps": 5,
+                          "weight": 90,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 2,
+                          "reps": 3,
+                          "weight": 95,
+                          "failure": false
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "exercise_name": "seating machine leg press",
+                  "sets": 2,
+                  "exercise_log": [
+                    {
+                      "log_number": 1,
+                      "log_sets": [
+                        {
+                          "set_number": 1,
+                          "reps": 12,
+                          "weight": 100,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 2,
+                          "reps": 8,
+                          "weight": 120,
+                          "failure": true
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "username": "oded",
+      "id": 100000001,
+      "password": "321oded123",
+      "admin": true,
+      "programs": [
+        {
+          "program_name": "generic ppl",
+          "program_split": [
+            {
+              "workout_name": "push day",
+              "exercises": [
+                {
+                  "exercise_name": "flat barbell bench press",
+                  "sets": 4,
+                  "exercise_log": [
+                    {
+                      "log_number": 1,
+                      "log_sets": [
+                        {
+                          "set_number": 1,
+                          "reps": 12,
+                          "weight": 50,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 2,
+                          "reps": 10,
+                          "weight": 55,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 3,
+                          "reps": 10,
+                          "weight": 55,
+                          "failure": true
+                        },
+                        {
+                          "set_number": 4,
+                          "reps": 8,
+                          "weight": 55,
+                          "failure": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "exercise_name": "incline dumbbell bench press",
+                  "sets": 2,
+                  "exercise_log": [
+                    {
+                      "log_number": 1,
+                      "log_sets": [
+                        {
+                          "set_number": 1,
+                          "reps": 12,
+                          "weight": 20,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 2,
+                          "reps": 8,
+                          "weight": 25,
+                          "failure": true
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "workout_name": "pull day",
+              "exercises": [
+                {
+                  "exercise_name": "barbell rows",
+                  "sets": 2,
+                  "exercise_log": [
+                    {
+                      "log_number": 1,
+                      "log_sets": [
+                        {
+                          "set_number": 1,
+                          "reps": 12,
+                          "weight": 50,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 2,
+                          "reps": 10,
+                          "weight": 55,
+                          "failure": false
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "exercise_name": "incline dumbbell rows",
+                  "sets": 2,
+                  "exercise_log": [
+                    {
+                      "log_number": 1,
+                      "log_sets": [
+                        {
+                          "set_number": 1,
+                          "reps": 12,
+                          "weight": 20,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 2,
+                          "reps": 8,
+                          "weight": 25,
+                          "failure": true
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "workout_name": "leg day",
+              "exercises": [
+                {
+                  "exercise_name": "high back barbell squats",
+                  "sets": 2,
+                  "exercise_log": [
+                    {
+                      "log_number": 1,
+                      "log_sets": [
+                        {
+                          "set_number": 1,
+                          "reps": 12,
+                          "weight": 70,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 2,
+                          "reps": 10,
+                          "weight": 80,
+                          "failure": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "exercise_name": "seating machine leg press",
+                  "sets": 2,
+                  "exercise_log": [
+                    {
+                      "log_number": 1,
+                      "log_sets": [
+                        {
+                          "set_number": 1,
+                          "reps": 12,
+                          "weight": 100,
+                          "failure": false
+                        },
+                        {
+                          "set_number": 2,
+                          "reps": 8,
+                          "weight": 120,
+                          "failure": true
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
