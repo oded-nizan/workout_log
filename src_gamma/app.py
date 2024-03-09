@@ -1,7 +1,12 @@
+# imports
 import sqlite3
 import random
 import string
+import hashlib
+import re
+import uuid
 
+# global variables
 admin_usernames = ["oded", "odednizan", "oded-nizan", "oded nizan"]
 database_path = "database.db"
 
@@ -70,27 +75,87 @@ def create_tables():
     conn.close()
 
 
+# Function to create a session table
+def create_session_table():
+    conn = sqlite3.connect(database_path)
+    cursor = conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS sessions (
+                        user_id INTEGER,
+                        session_token TEXT,
+                        FOREIGN KEY (user_id) REFERENCES users(id)
+                    )''')
+    conn.commit()
+    conn.close()
+
+
+# Function to create a session for a user
+def create_session(user_id):
+    conn = sqlite3.connect(database_path)
+    cursor = conn.cursor()
+    session_token = str(uuid.uuid4())  # Generate a random session token
+    cursor.execute("INSERT INTO sessions (user_id, session_token) VALUES (?, ?)", (user_id, session_token))
+    conn.commit()
+    conn.close()
+    return session_token
+
+
+# Function to verify a session token
+def verify_session(session_token):
+    conn = sqlite3.connect(database_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT user_id FROM sessions WHERE session_token = ?", (session_token,))
+    user_id = cursor.fetchone()
+    conn.close()
+    return user_id[0] if user_id else None
+
+
+# Function to delete a session
+def delete_session(session_token):
+    conn = sqlite3.connect(database_path)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM sessions WHERE session_token = ?", (session_token,))
+    conn.commit()
+    conn.close()
+
+
+# a function to validate the strength of a password
+def validate_password_strength(password):
+    # Define password strength criteria
+    min_length = 8
+    has_lowercase = re.search(r'[a-z]', password)
+    has_uppercase = re.search(r'[A-Z]', password)
+    has_digit = re.search(r'\d', password)
+    has_special = re.search(r'[!@#$%^&*()\-_=+\\|/?.,<>\[\]{}]', password)
+
+    # Check if password meets the minimum criteria
+    if len(password) < min_length:
+        return False, "Password must be at least 8 characters long."
+    elif not has_lowercase:
+        return False, "Password must contain at least one lowercase letter."
+    elif not has_uppercase:
+        return False, "Password must contain at least one uppercase letter."
+    elif not has_digit:
+        return False, "Password must contain at least one digit."
+    elif not has_special:
+        return False, "Password must contain at least one special character."
+    else:
+        return True, "Password meets the minimum strength requirements."
+
+
+# check if a user is admin in creation
 def is_admin_list(username):
     """Check if a username is in the admin list."""
     return username in admin_usernames
 
 
+# generate a unique id  for each user
 def generate_unique_id():
     """Generate a random unique ID for the user."""
     unique_id = ''.join(random.choices(string.digits, k=9))
     return unique_id
 
 
-def add_user(username, password):
-    """Add a new user to the database."""
-    conn = sqlite3.connect(database_path)
-    cursor = conn.cursor()
-    admin = is_admin_list(username)
-    cursor.execute("INSERT INTO users (username, password, admin) VALUES (?, ?, ?)", (username, password, admin))
-    conn.commit()
-    conn.close()
-
-
+# check if a user in the database is an admin
 def is_admin(username):
     """Check if a user is an admin."""
     conn = sqlite3.connect(database_path)
@@ -101,6 +166,7 @@ def is_admin(username):
     return admin[0] if admin else False
 
 
+# allow admin users to change admin status of other users
 def change_admin_status(admin_username, username_to_change, new_admin_status):
     """Change the admin status of a user."""
     conn = sqlite3.connect(database_path)
@@ -126,6 +192,7 @@ def change_admin_status(admin_username, username_to_change, new_admin_status):
     conn.close()
 
 
+# allow admin users to view other user's information
 def view_user_info(admin_username):
     """View user information."""
     conn = sqlite3.connect(database_path)
@@ -174,6 +241,7 @@ def view_user_info(admin_username):
     conn.close()
 
 
+# check if a user owns said program
 def owns_program(username, program_name):
     """Check if a user owns a program."""
     conn = sqlite3.connect(database_path)
@@ -187,17 +255,32 @@ def owns_program(username, program_name):
     return True if result else False
 
 
+# allow a user to create a program
 def create_program(username, program_name):
-    """Create a program."""
     conn = sqlite3.connect(database_path)
     cursor = conn.cursor()
+
+    # Check if the program already exists
+    cursor.execute("SELECT * FROM programs WHERE program_name = ?", (program_name,))
+    existing_program = cursor.fetchone()
+    if existing_program:
+        print("Error: Program name already exists.")
+        conn.close()
+        return False
+
+    # Get the user ID
     cursor.execute("SELECT id FROM users WHERE username = ?", (username,))
     user_id = cursor.fetchone()[0]
+
+    # Insert the new program into the database
     cursor.execute("INSERT INTO programs (user_id, program_name) VALUES (?, ?)", (user_id, program_name))
     conn.commit()
     conn.close()
+    print("Program created successfully.")
+    return True
 
 
+# allow a user to edit a program if they own it or are admin
 def edit_program(admin_username):
     """Edit a program."""
     conn = sqlite3.connect(database_path)
@@ -265,6 +348,7 @@ def edit_program(admin_username):
     conn.close()
 
 
+# input sets for logging and return in a list format
 def input_log_sets(set_count):
     """Input log sets."""
     log_sets = []
@@ -282,6 +366,7 @@ def input_log_sets(set_count):
     return log_sets
 
 
+# log said data in to the database
 def log_data(username, program_name, exercise_name, log_number, log_sets):
     """Log data into the database."""
     conn = sqlite3.connect(database_path)
@@ -307,6 +392,7 @@ def log_data(username, program_name, exercise_name, log_number, log_sets):
     conn.close()
 
 
+# allow users to log data into their programs
 def log_data_into_exercise(username):
     """Log data into an exercise."""
     conn = sqlite3.connect(database_path)
@@ -407,43 +493,79 @@ def log_data_into_exercise(username):
     conn.close()
 
 
-def sign_in(username, password):
-    """Sign in with username and password."""
+# Function to add a new user to the database with password hashing
+def add_user(username, password):
     conn = sqlite3.connect(database_path)
     cursor = conn.cursor()
 
+    # Check if the username already exists
     cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+    existing_user = cursor.fetchone()
+    if existing_user:
+        print("Error: Username already exists.")
+        conn.close()
+        return False
+
+    # Validate password strength
+    if not validate_password_strength(password):
+        print("Error: Password does not meet the required criteria.")
+        conn.close()
+        return False
+
+    # Hash the password
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
+    # Insert the new user into the database
+    cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
+    conn.commit()
+    conn.close()
+    print("User added successfully.")
+    return True
+
+
+# Function to sign in with password hashing
+def sign_in(username, password):
+    conn = sqlite3.connect(database_path)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
     user = cursor.fetchone()
 
-    if user and user[2] == password:
+    if user:
         print(f"Welcome back, {username}!")
+        conn.close()
         return user  # Return the user data
     else:
         print("Incorrect username or password.")
+        conn.close()
         return None
 
 
-def menu(username):
+def menu(username, session_token):
     """Display the main menu."""
-    print("\nMenu:")
-    print("1. Create a program")
-    print("2. Log data into a program")
-    print("3. Edit a program")
-    print("4. Exit")
+    while True:
+        print("\nMenu:")
+        print("1. Create a program")
+        print("2. Log data into a program")
+        print("3. Edit a program")
+        print("4. Exit")
 
-    choice = input("Enter your choice (1-4): ")
+        choice = input("Enter your choice (1-4): ")
 
-    if choice == '1':
-        program_name = input("Enter program name: ")
-        create_program(username, program_name)
-    elif choice == '2':
-        log_data_into_exercise(username)
-    elif choice == '3':
-        edit_program(username)
-    elif choice == '4':
-        print("Exiting program.")
-    else:
-        print("Invalid choice. Please enter a number from 1 to 4.")
+        if choice == '1':
+            program_name = input("Enter program name: ")
+            create_program(username, program_name)
+        elif choice == '2':
+            log_data_into_exercise(username)
+        elif choice == '3':
+            edit_program(username)
+        elif choice == '4':
+            # Delete session upon logout
+            delete_session(session_token)
+            print("Exiting program.")
+            break
+        else:
+            print("Invalid choice. Please enter a number from 1 to 4.")
 
 
 def main():
@@ -456,9 +578,16 @@ def main():
         username = input("Enter your username: ")
         password = input("Enter your password: ")
 
+        # Authenticate user
         user = sign_in(username, password)
         if user:
-            menu(username)
+            # Create session for authenticated user
+            user_id = user[0]
+            session_token = create_session(user_id)
+            print("User authenticated. Session token:", session_token)
+
+            # Display menu options
+            menu(username, session_token)
             break
         else:
             print("Invalid username or password. Please try again.")
