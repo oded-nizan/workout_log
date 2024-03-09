@@ -5,10 +5,13 @@ import string
 import hashlib
 import re
 import uuid
+from cryptography.fernet import Fernet
+import base64
 
 # global variables
 admin_usernames = ["oded", "odednizan", "oded-nizan", "oded nizan"]
 database_path = "database.db"
+key = base64.urlsafe_b64encode(Fernet.generate_key())
 
 
 # Function to load database
@@ -116,6 +119,27 @@ def delete_session(session_token):
     cursor.execute("DELETE FROM sessions WHERE session_token = ?", (session_token,))
     conn.commit()
     conn.close()
+
+
+# Generate a key for encryption and decryption
+def generate_key():
+    return base64.urlsafe_b64encode(Fernet.generate_key())
+
+
+# Initialize the cipher suite with the generated key
+def initialize_cipher_suite(key):
+    return Fernet(key)
+
+
+# Encrypt data
+def encrypt_data(data, cipher_suite):
+    encrypted_data = cipher_suite.encrypt(data.encode())
+    return encrypted_data
+
+
+# Decrypt data
+def decrypt_data(encrypted_data, cipher_suite):
+    return cipher_suite.decrypt(encrypted_data.encode()).decode()
 
 
 # a function to validate the strength of a password
@@ -494,7 +518,7 @@ def log_data_into_exercise(username):
 
 
 # Function to add a new user to the database with password hashing
-def add_user(username, password):
+def add_user(username, password, cipher_suite):
     conn = sqlite3.connect(database_path)
     cursor = conn.cursor()
 
@@ -515,8 +539,11 @@ def add_user(username, password):
     # Hash the password
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
+    # Encrypt the hashed password
+    encrypted_password = encrypt_data(hashed_password, cipher_suite)
+
     # Insert the new user into the database
-    cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
+    cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, encrypted_password))
     conn.commit()
     conn.close()
     print("User added successfully.")
@@ -524,20 +551,27 @@ def add_user(username, password):
 
 
 # Function to sign in with password hashing
-def sign_in(username, password):
+def sign_in(username, password, cipher_suite):
     conn = sqlite3.connect(database_path)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
     user = cursor.fetchone()
 
     if user:
-        print(f"Welcome back, {username}!")
-        conn.close()
-        return user  # Return the user data
+        # Decrypt the password
+        decrypted_password = decrypt_data(user[2], cipher_suite)
+        # Hash the provided password
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        # Compare the hashed passwords
+        if decrypted_password == hashed_password:
+            print(f"Welcome back, {username}!")
+            return user  # Return the user data
+        else:
+            print("Incorrect username or password.")
+            return None
     else:
         print("Incorrect username or password.")
-        conn.close()
         return None
 
 
@@ -577,9 +611,10 @@ def main():
         print("\nWelcome to the Fitness Tracker!")
         username = input("Enter your username: ")
         password = input("Enter your password: ")
+        cipher_suite = initialize_cipher_suite(key)
 
         # Authenticate user
-        user = sign_in(username, password)
+        user = sign_in(username, password, cipher_suite)
         if user:
             # Create session for authenticated user
             user_id = user[0]
@@ -590,7 +625,17 @@ def main():
             menu(username, session_token)
             break
         else:
-            print("Invalid username or password. Please try again.")
+            print("Invalid username or password.")
+            create_user_choice = input("Do you want to create a new user? (yes/no): ")
+            if create_user_choice.lower() == 'yes':
+                new_username = input("Enter a new username: ")
+                new_password = input("Enter a new password: ")
+                if add_user(new_username, new_password, cipher_suite):
+                    print("User created successfully.")
+                else:
+                    print("Failed to create user.")
+            else:
+                continue
 
 
 if __name__ == "__main__":
